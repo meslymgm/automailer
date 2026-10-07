@@ -41,8 +41,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           BRIEFING_RECIPIENTS: ${{vars.BRIEFING_RECIPIENTS}}
-        run:
-          poetry run python src/processing.py
+        run: poetry run python src/processing.py
 
 
 
