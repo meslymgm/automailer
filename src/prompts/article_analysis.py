@@ -38,3 +38,18 @@ Source: {article.source}
 Summary:{article.summary}
 
 """
+
+def build_article_batch_input(articles: list[NewsArticle]):
+    article_block = []
+    for index, article in enumerate(articles, start=1):
+        article_block.append(
+            f"""
+Article {index}
+Article ID: {create_article_id(article.url)}
+Title: {article.title}
+Source: {article.source}
+Summary: {article.summary}
+            """
+        )
+
+    return "\n----\n".join(article_block)

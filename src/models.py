@@ -30,7 +30,7 @@ class ArticleCategory(str, Enum):
     BOOKS = "Books & Ideas"
     GENERATIONAL = "Generational Culture"
     MENTAL_DEVELOPMENT = "Mental Development"
-    KERALA = "KERALA"
+    KERALA = "Kerala"
     OTHER = "Other"
 
 class ArticleAnalysis(BaseModel):
@@ -41,4 +41,18 @@ class ArticleAnalysis(BaseModel):
     novelty_score: int = Field(ge=1, le=10)
     reason: str
 
+class ArticleAnalysisBatch(BaseModel):
+    analyses: list[ArticleAnalysis]
+
+class BriefingItem(BaseModel):
+    title: str
+    category: ArticleCategory
+    summary: str
+    source: str
+    why_it_matters: str
+
+class DailyBriefing(BaseModel):
+    headline: str
+    items: list[BriefingItem]
+    closing_thought: str
 

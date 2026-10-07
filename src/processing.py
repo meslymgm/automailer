@@ -8,7 +8,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-from llm import analyse_article
+import asyncio
+from llm import main, generate_daily_briefing
+from utils import create_batches, create_article_id, select_articles
+from ranking import calculate_final_Score
+from openai import AsyncOpenAI
+from google_auth.email_sender import send_email
+from google_auth.email_renderer import render_briefing_html
+from google_auth.auth_helper import get_gmail_service
+
 
 
 def filter_new_articles(articles: list[NewsArticle],
@@ -75,21 +83,85 @@ def calculate_similarity_between_articles(model_name = "sentence-transformers/al
     percentiles = np.percentile(df["similarity_score"], [50, 75, 90, 95, 99])
     # print(percentiles)
     return similarities, df, percentiles
+async def run_pipeline():
+    async with AsyncOpenAI() as client:
+        articles = []
+
+        for source in RSS_FEEDS:
+            articles.extend(fetch_feed(source))
+        recent_articles = filter_new_articles(articles, hours=24)
+        # print(f"Number of articles: {len(recent_articles)}")
+        articles_unique = remove_duplicate_urls(recent_articles)
+        # print(f"Number of articles after url based deduplication: {len(articles_unique)}")
+        # similarities, df, percentiles = calculate_similarity_between_articles(articles = articles_unique)
+        # clusters = cluster_articles_by_similarity(articles=articles_unique, similarity_matrix=similarities, threshold=0.6)
+        # print(len(clusters))
+        # print(clusters[0])
+        # test_articles = articles_unique[:9]
+
+        batches = create_batches(articles_unique, 10)
+
+        results = await main(batches, max_concurrency=2)
+
+        print(f"Number of batches returned:"
+                f"{len(results)}")
+
+        for batch_number, batch_result in enumerate(results, start=1):
+            print(f"\n Batch {batch_number}")
+
+            for analysis in batch_result:
+                print(analysis)
+
+        all_analyses = [
+            analysis for batch_result in results for analysis in batch_result
+        ]
+
+        # for analysis in all_analyses:
+        #     print(
+        #         analysis.category,
+        #         analysis.importance_score,
+        #         analysis.relevance_score,
+        #         analysis.novelty_score
+            # )
+
+        ranked = sorted(
+            all_analyses,
+            key=calculate_final_Score,
+            reverse=True
+        )
+        article_by_id = {
+        create_article_id(article.url): article
+        for article in articles_unique
+    }
+        articles_selected = select_articles(ranked, 2)
+
+        # return articles
+        for article in articles_selected:
+            print(
+                    article.category,
+                    article.importance_score,
+                    article.relevance_score,
+                    article.novelty_score
+                    )
+            print(article.category)
+            # print(article_by_id[article.article_id])
+
+        daily_briefing = await generate_daily_briefing(articles_selected, article_by_id, client=client)
+        print(daily_briefing)
+        daily_briefing_html_body = render_briefing_html(daily_briefing)
+        send_email(
+            service=get_gmail_service(),
+            recipients=["meslymathews@gmail.com","bibinkattackan@gmail.com"],
+            subject="Today's daily briefing",
+            html_body=daily_briefing_html_body
+        )
+    return daily_briefing
 
 if __name__=="__main__":
-    articles = []
+    asyncio.run(run_pipeline())
 
-    for source in RSS_FEEDS:
-        articles.extend(fetch_feed(source))
-    recent_articles = filter_new_articles(articles, hours=24)
-    print(f"Number of articles: {len(recent_articles)}")
-    articles_unique = remove_duplicate_urls(recent_articles)
-    print(f"Number of articles after url based deduplication: {len(articles_unique)}")
-    # similarities, df, percentiles = calculate_similarity_between_articles(articles = articles_unique)
-    # clusters = cluster_articles_by_similarity(articles=articles_unique, similarity_matrix=similarities, threshold=0.6)
-    # print(len(clusters))
-    # print(clusters[0])
-    for article in articles_unique[:20]:
-        print(article.summary)
-        analysed_res = analyse_article(article)
-        print(analysed_res)
+
+
+
+
+

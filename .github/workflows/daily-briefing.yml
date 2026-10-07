@@ -1,0 +1,48 @@
+name: Daily Briefing
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "30 7 * * *"
+      timezone: "Asia/Kolkata"
+
+jobs:
+  generate-briefing:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14.6"
+
+      - name: Install poetry
+        run: pip install poetry
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Restore gmail credentials
+        env:
+          GMAIL_TOKEN_B64: ${{ secrets.GMAIL_TOKEN_B64 }}
+          GMAIL_CREDENTIALS_B64: ${{ secrets.GMAIL_CREDENTIALS_B64 }}
+        run: |
+          mkdir -p credentials
+          echo "$GMAIL_TOKEN_B64" | base64 --decode > token.json
+          echo "$GMAIL_CREDENTIALS_B64" | base64 --decode > credentials/google-credentials.json
+
+      - name: Run automailer
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BRIEFING_RECIPIENTS: ${{vars.BRIEFING_RECIPIENTS}}
+        run:
+          poetry run python src/processing.py
+
+
+
