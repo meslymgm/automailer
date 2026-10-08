@@ -1,4 +1,5 @@
 from models import ArticleAnalysis, NewsArticle
+
 BRIEFING_INSTRUCTIONS = """
 Create a concise daily learning briefing from the supplied
 pre-selected articles.
@@ -23,13 +24,13 @@ The briefing should be concise enough to read comfortably
 in roughly 5-10 minutes. Closing thought should contain summary of all articles in a concise way.
 """
 
+
 def build_briefing_input(
-    selected_analyses: list[ArticleAnalysis],
-    article_by_id: dict[str, NewsArticle]
+    selected_analyses: list[ArticleAnalysis], article_by_id: dict[str, NewsArticle]
 ) -> str:
     articles = """"""
     for article in selected_analyses:
-        articles+=f"""
+        articles += f"""
 Article category: {article.category}
 Title: {article_by_id[article.article_id].title}
 Summary: {article_by_id[article.article_id].summary}

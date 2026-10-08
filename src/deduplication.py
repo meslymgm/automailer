@@ -1,5 +1,6 @@
 from models import NewsArticle
 
+
 def deduplicate_articles_by_url(articles: list[NewsArticle]) -> list[NewsArticle]:
     """Remove duplicate articles based on their URL while keeping the first occurrence."""
     seen_urls = set()
@@ -33,7 +34,9 @@ def remove_duplicate_urls(existing_articles: list[NewsArticle]) -> list[NewsArti
     return deduplicate_articles_by_url(existing_articles)
 
 
-def cluster_articles_by_similarity(articles: list[NewsArticle], similarity_matrix: list[list[float]], threshold: float = 0.8) -> list[list[NewsArticle]]:
+def cluster_articles_by_similarity(
+    articles: list[NewsArticle], similarity_matrix: list[list[float]], threshold: float = 0.8
+) -> list[list[NewsArticle]]:
     """Group articles into clusters based on similarity score matrix.
 
     Args:
@@ -66,9 +69,6 @@ def cluster_articles_by_similarity(articles: list[NewsArticle], similarity_matri
                 visited.add(j)
 
         clusters.append(cluster)
-        clusters_ = [cluster for cluster in clusters if len(cluster)>1]
+        clusters_ = [cluster for cluster in clusters if len(cluster) > 1]
 
     return clusters_
-
-
-

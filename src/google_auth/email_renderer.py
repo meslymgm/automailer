@@ -1,7 +1,7 @@
 from models import DailyBriefing
-def render_briefing_html(
-        briefing: DailyBriefing
-)->str:
+
+
+def render_briefing_html(briefing: DailyBriefing) -> str:
     html = f"""
 <html>
 <body>

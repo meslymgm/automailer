@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
+from enum import StrEnum
+
 from pydantic import BaseModel, Field
-from enum import Enum
+
 
 @dataclass
 class NewsArticle:
@@ -12,12 +14,14 @@ class NewsArticle:
     source: str
     embedding_text: str
 
+
 @dataclass
 class RSSSource:
     name: str
     url: str
 
-class ArticleCategory(str, Enum):
+
+class ArticleCategory(StrEnum):
     INDIA_POLITICS = "India Politics"
     INDIA_POLICIES = "India Policies"
     LIFE_IN_INDIA = "News impacting people living in India, especially Kerala"
@@ -33,6 +37,7 @@ class ArticleCategory(str, Enum):
     KERALA = "Kerala"
     OTHER = "Other"
 
+
 class ArticleAnalysis(BaseModel):
     article_id: str
     category: ArticleCategory
@@ -41,8 +46,10 @@ class ArticleAnalysis(BaseModel):
     novelty_score: int = Field(ge=1, le=10)
     reason: str
 
+
 class ArticleAnalysisBatch(BaseModel):
     analyses: list[ArticleAnalysis]
+
 
 class BriefingItem(BaseModel):
     title: str
@@ -51,8 +58,8 @@ class BriefingItem(BaseModel):
     source: str
     why_it_matters: str
 
+
 class DailyBriefing(BaseModel):
     headline: str
     items: list[BriefingItem]
     closing_thought: str
-

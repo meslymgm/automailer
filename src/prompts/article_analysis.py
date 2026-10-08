@@ -1,5 +1,6 @@
-from utils import create_article_id
 from models import NewsArticle
+from utils import create_article_id
+
 ANALYSIS_INSTRUCTIONS = """
 You analyse news articles for a personal daily learning breifing.
 
@@ -38,6 +39,7 @@ Source: {article.source}
 Summary:{article.summary}
 
 """
+
 
 def build_article_batch_input(articles: list[NewsArticle]):
     article_block = []

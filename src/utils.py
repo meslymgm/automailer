@@ -1,9 +1,12 @@
 import hashlib
-from models import NewsArticle, ArticleAnalysis
-from typing import DefaultDict
+from collections import defaultdict
+
+from models import ArticleAnalysis, NewsArticle
+
 
 def create_article_id(url: str) -> str:
     return hashlib.sha256(url.encode("utf-8")).hexdigest()
+
 
 def create_batches(articles: list[NewsArticle], batch_size=10) -> list[list[NewsArticle]]:
     batches = []
@@ -11,12 +14,13 @@ def create_batches(articles: list[NewsArticle], batch_size=10) -> list[list[News
         batches.append(articles[i : i + batch_size])
     return batches
 
+
 def select_articles(
     analyses: list[ArticleAnalysis],
     max_per_category: int = 2,
 ) -> list[ArticleAnalysis]:
     selected: list[ArticleAnalysis] = []
-    by_category: dict[str, list[ArticleAnalysis]] = DefaultDict(list)
+    by_category: dict[str, list[ArticleAnalysis]] = defaultdict(list)
 
     for analysis in analyses:
         category = analysis.category

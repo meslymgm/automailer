@@ -6,7 +6,7 @@ sentences = [
     "India launches a new national AI mission",
     "Government announces a new artificial intelligence initiative",
     "Indian technology companies increase AI investments",
-    "England wins the cricket match"
+    "England wins the cricket match",
 ]
 
 embeddings = model.encode(sentences)

@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+    quality:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v4
+
+        - name: Set up python
+          uses: actions/setup-python@v5
+          with:
+            python-version: "3.14.6"
+
+        - name: Install Poetry
+          run: pip install poetry
+
+        - name: Install dependencies
+          run: poetry install --no-interaction --no-root
+
+
+        - name: Ruff check
+          run: poetry run ruff check .
+
+        - name: Ruff format check
+          run: poetry run ruff format --check .
+
+        - name: pyright
+          run: poetry run pyright
+
+        - name: pytest
+          run: poetry run pytest
+
+        - name: bandit
+          run: poetry run bandit -r src
+
+        - name: pip-audit
+          run: poetry run pip-audit
+
+

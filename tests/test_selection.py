@@ -1,0 +1,36 @@
+from models import ArticleAnalysis, ArticleCategory
+from utils import select_articles
+
+
+def test_article_selection():
+    analysis_1 = ArticleAnalysis(
+        article_id="article-1",
+        category=ArticleCategory.BUSINESS,
+        importance_score=9,
+        relevance_score=8,
+        novelty_score=7,
+        reason="A major business trend is reshaping local markets.",
+    )
+
+    analysis_2 = ArticleAnalysis(
+        article_id="article-2",
+        category=ArticleCategory.BUSINESS,
+        importance_score=8,
+        relevance_score=9,
+        novelty_score=6,
+        reason="Consumer demand is shifting across the sector.",
+    )
+
+    analysis_3 = ArticleAnalysis(
+        article_id="article-3",
+        category=ArticleCategory.BUSINESS,
+        importance_score=7,
+        relevance_score=8,
+        novelty_score=8,
+        reason="A policy decision is expected to reshape business planning.",
+    )
+
+    selected = select_articles([analysis_1, analysis_2, analysis_3], max_per_category=2)
+
+    assert len(selected) == 2
+    assert {item.article_id for item in selected} == {"article-1", "article-2"}

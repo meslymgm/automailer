@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from utils import create_article_id, create_batches
 from models import NewsArticle
+from utils import create_article_id, create_batches
 
 
 def test_create_article_id_is_deterministic():
@@ -71,8 +71,26 @@ def test_create_batches():
         [article_5],
     ]
 
+
 def test_create_batches_when_input_is_empty():
     assert create_batches([], batch_size=3) == []
 
+
 def test_create_batches_when_batch_size_exceeds_input():
-    assert create_batches([1, 2], batch_size=10) == [[1, 2]]
+    article_1 = NewsArticle(
+        title="First article",
+        url="https://example.com/1",
+        published_at=datetime(2024, 1, 1, 9, 0, 0),
+        summary="Summary 1",
+        source="Example News",
+        embedding_text="Embedding text 1",
+    )
+    article_2 = NewsArticle(
+        title="Second article",
+        url="https://example.com/2",
+        published_at=datetime(2024, 1, 2, 9, 0, 0),
+        summary="Summary 2",
+        source="Example News",
+        embedding_text="Embedding text 2",
+    )
+    assert create_batches([article_1, article_2], batch_size=10) == [[article_1, article_2]]
