@@ -1,4 +1,4 @@
-# Stay Updated Current
+# Automaailer
 
 A production-oriented AI news briefing application that collects recent news from RSS feeds, filters and deduplicates articles, uses LLM-based structured analysis to rank and categorize stories, generates a concise daily briefing, and can deliver the result by email or expose the workflow through a FastAPI service.
 
