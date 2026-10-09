@@ -1,5 +1,5 @@
 [project]
-name = "stay-updated-current"
+name = "stay_updated_current"
 version = "0.1.0"
 description = "An automated mailing system"
 authors = [
@@ -68,3 +68,12 @@ typeCheckingMode = "basic"
 include = ["src", "tests"]
 
 extraPaths = ["src"]
+
+[[tool.poetry.source]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[tool.poetry.dependencies]
+torch = { version = "*", source = "pytorch-cpu" }
+sentence-transformers = ">=6.1.0,<7.0.0"
